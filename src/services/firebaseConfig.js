@@ -5,7 +5,7 @@ import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "",
+  apiKey: "AIzaSyC6jyU6KzwLqCB3n29NUEI-psU-3L9xYAE",
   authDomain: "cervihealth-c67d0.firebaseapp.com",
   projectId: "cervihealth-c67d0",
   storageBucket: "cervihealth-c67d0.firebasestorage.app",
