@@ -158,6 +158,20 @@ export default function UploadConfirmationScreen() {
                   </ThemedText>
                 </View>
               </View>
+
+              <View style={styles.detailItem}>
+                <ThemedText style={styles.detailLabel}>AI Classification:</ThemedText>
+                <ThemedText style={styles.detailValue}>
+                  {screening?.aiResult || 'Not available'}
+                </ThemedText>
+              </View>
+
+              <View style={styles.detailItem}>
+                <ThemedText style={styles.detailLabel}>AI Review:</ThemedText>
+                <ThemedText style={styles.detailValue}>
+                  {screening?.aiReviewStatus || 'Not available'}
+                </ThemedText>
+              </View>
               
               <View style={styles.detailItem}>
                 <ThemedText style={styles.detailLabel}>Screening ID:</ThemedText>

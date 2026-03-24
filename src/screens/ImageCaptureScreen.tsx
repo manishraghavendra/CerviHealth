@@ -18,9 +18,10 @@ import {
 import { ThemedText } from '../../components/ThemedText';
 import { ThemedView } from '../../components/ThemedView';
 import { Colors } from '../../constants/Colors';
+import { predictCervicalScreening } from '../services/cervicalClassifier';
 import { uploadImage } from '../services/cloudinary';
 import { auth, firestore } from '../services/firebaseConfig';
-import { createNotification, createScreeningRecord, getPatient, getUserData } from '../services/firestore';
+import { createNotification, createScreeningRecord, getPatient, getUserData, updateScreeningAiResult } from '../services/firestore';
 import { Screening } from '../types';
 
 interface PatientDoc {
@@ -174,6 +175,22 @@ export default function ImageCaptureScreen() {
 
       // Save to Firestore
       const screeningId = await createScreeningRecord(screeningData);
+
+      // Run cervical classification inference and store result.
+      // This is non-blocking for the upload flow if classifier service is unavailable.
+      if (screeningId) {
+        try {
+          const prediction = await predictCervicalScreening(cloudinaryUrl, screeningId);
+          await updateScreeningAiResult(screeningId, {
+            aiReviewStatus: prediction.reviewStatus,
+            aiResult: prediction.aiResult,
+            aiConfidence: prediction.confidence,
+            aiAvgRedIntensity: prediction.avgRedIntensity
+          });
+        } catch (predictionError) {
+          console.warn('[ImageCaptureScreen] AI prediction unavailable for this upload:', predictionError);
+        }
+      }
       
       // Notify patient
       if (screeningId && screeningData.patientId) {

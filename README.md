@@ -42,6 +42,30 @@ To learn more about developing your project with Expo, look at the following res
 - [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
 - [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
+## Cervical Classification Integration
+
+This app is integrated with a lightweight Python API that runs cervical image classification.
+
+### 1) Start the classifier API
+
+```bash
+cd ml_api
+pip install -r requirements.txt
+python app.py
+```
+
+API runs at `http://localhost:5000` by default.
+
+### 2) Configure Expo app
+
+Set this environment variable before starting the app:
+
+```bash
+EXPO_PUBLIC_CLASSIFIER_API_URL=http://<your-machine-ip>:5000
+```
+
+Use your machine LAN IP (not `localhost`) when testing on a physical phone.
+
 ## Join the community
 
 Join our community of developers creating universal apps.
