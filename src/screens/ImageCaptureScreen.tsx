@@ -165,31 +165,62 @@ export default function ImageCaptureScreen() {
         throw new Error('Failed to upload image to Cloudinary');
       }
 
+      // Run AI classification before creating the record so routing logic
+      // can immediately decide if doctor review is needed.
+      let aiPrediction: {
+        reviewStatus: 'Normal' | 'Abnormal';
+        aiResult: string;
+        confidence: number;
+        avgRedIntensity: number;
+      } | null = null;
+
+      try {
+        aiPrediction = await predictCervicalScreening(cloudinaryUrl, `pending-${Date.now()}`);
+      } catch (predictionError) {
+        console.warn('[ImageCaptureScreen] AI prediction unavailable for this upload:', predictionError);
+      }
+
+      const isAutoNormal = aiPrediction?.reviewStatus === 'Normal';
+      const initialStatus: Screening['status'] = isAutoNormal ? 'Reviewed' : 'Uploaded';
+
       // Prepare screening data
-      const screeningData: Omit<Screening, 'id' | 'createdAt'> = {
+      const screeningData: Omit<Screening, 'id' | 'createdAt'> & {
+        aiReviewStatus?: 'Normal' | 'Abnormal';
+        aiResult?: string;
+        aiConfidence?: number;
+        aiAvgRedIntensity?: number;
+      } = {
         patientId,
         imageUrl: cloudinaryUrl,
-        status: 'Uploaded',
-        healthcareWorkerId: userId
+        status: initialStatus,
+        healthcareWorkerId: userId,
+        ...(aiPrediction
+          ? {
+              aiReviewStatus: aiPrediction.reviewStatus,
+              aiResult: aiPrediction.aiResult,
+              aiConfidence: aiPrediction.confidence,
+              aiAvgRedIntensity: aiPrediction.avgRedIntensity
+            }
+          : {})
       };
+
+      // Auto-finalize normal AI cases so patient gets a final report
+      if (isAutoNormal) {
+        (screeningData as any).reviewStatus = 'Normal';
+        (screeningData as any).doctorComments =
+          `AI screening result: Normal (${Math.round((aiPrediction?.confidence || 0) * 100)}% confidence). No immediate doctor follow-up required.`;
+      }
 
       // Save to Firestore
       const screeningId = await createScreeningRecord(screeningData);
 
-      // Run cervical classification inference and store result.
-      // This is non-blocking for the upload flow if classifier service is unavailable.
-      if (screeningId) {
-        try {
-          const prediction = await predictCervicalScreening(cloudinaryUrl, screeningId);
-          await updateScreeningAiResult(screeningId, {
-            aiReviewStatus: prediction.reviewStatus,
-            aiResult: prediction.aiResult,
-            aiConfidence: prediction.confidence,
-            aiAvgRedIntensity: prediction.avgRedIntensity
-          });
-        } catch (predictionError) {
-          console.warn('[ImageCaptureScreen] AI prediction unavailable for this upload:', predictionError);
-        }
+      if (screeningId && aiPrediction) {
+        await updateScreeningAiResult(screeningId, {
+          aiReviewStatus: aiPrediction.reviewStatus,
+          aiResult: aiPrediction.aiResult,
+          aiConfidence: aiPrediction.confidence,
+          aiAvgRedIntensity: aiPrediction.avgRedIntensity
+        });
       }
       
       // Notify patient
@@ -212,8 +243,8 @@ export default function ImageCaptureScreen() {
         }
       }
 
-      // Notify all Doctors
-      if (screeningId) {
+      // Notify all Doctors only for abnormal/pending cases
+      if (screeningId && !isAutoNormal) {
         try {
           const hcwData = await getUserData(userId) as UserData | null;
           const hcwName = hcwData?.name || 'A Healthcare Worker';
@@ -235,6 +266,24 @@ export default function ImageCaptureScreen() {
           });
         } catch (doctorNotificationError) {
           console.error('[ImageCaptureScreen] Error sending new screening notification to doctors:', doctorNotificationError);
+        }
+      }
+
+      // Notify patient with auto-final result for normal AI cases
+      if (screeningId && isAutoNormal) {
+        try {
+          const patientDoc = await getPatient(screeningData.patientId) as PatientDoc | null;
+          if (patientDoc?.userId) {
+            await createNotification(
+              patientDoc.userId,
+              'SCREENING_UPDATE',
+              'Screening Result Ready',
+              `Your screening result is Normal (${Math.round((aiPrediction?.confidence || 0) * 100)}% confidence).`,
+              { screeningId: screeningId, patientId: screeningData.patientId }
+            );
+          }
+        } catch (normalNotificationError) {
+          console.error('[ImageCaptureScreen] Error sending auto-normal notification:', normalNotificationError);
         }
       }
 
