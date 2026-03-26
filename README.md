@@ -35,16 +35,12 @@ npm run reset-project
 
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
 ## Cervical Classification Integration
 
 This app is integrated with a lightweight Python API that runs cervical image classification.
+
+Use two terminals. 
 
 ### 1) Start the classifier API
 
@@ -54,7 +50,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-API runs at `http://localhost:5000` by default.
+API runs oN `localhost:5000` by default.
 
 ### 2) Configure Expo app
 
@@ -64,11 +60,5 @@ Set this environment variable before starting the app:
 EXPO_PUBLIC_CLASSIFIER_API_URL=http://<your-machine-ip>:5000
 ```
 
-Use your machine LAN IP (not `localhost`) when testing on a physical phone.
+Use your machine IP (LAN) (not `localhost`) when testing on a physical phone.
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
