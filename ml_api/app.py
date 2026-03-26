@@ -14,12 +14,13 @@ def _load_image_from_url(image_url: str) -> np.ndarray:
     image = Image.open(BytesIO(response.content)).convert("RGB")
     return np.array(image)
 
+#And i know very well that i wont fucking use it. (Just as a placeholder)
 
 def classify_cervical_image(image_url: str) -> dict:
     """
     Classification logic adapted from the existing cervical classification project.
     This uses average red-channel intensity to infer likely stage.
-    """
+    """    
     image = _load_image_from_url(image_url)
     avg_red_intensity = float(np.mean(image[:, :, 0]))
 
