@@ -24,12 +24,13 @@
       "targetSdkVersion": 35,
       "minSdkVersion": 24,
       "permissions": [
-        "INTERNET",
-        "ACCESS_NETWORK_STATE",
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "READ_MEDIA_IMAGES"
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -68,8 +69,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "0d51e39c-e447-4793-a4d3-f4c29772bc93"
+        "projectId": "54f2bf8c-0de3-4f35-960a-2d7218b4d2e4"
       }
-    }
+    },
+    "owner": "manishrag"
   }
 }
