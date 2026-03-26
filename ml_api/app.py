@@ -14,7 +14,7 @@ def _load_image_from_url(image_url: str) -> np.ndarray:
     image = Image.open(BytesIO(response.content)).convert("RGB")
     return np.array(image)
 
-#And i know very well that i wont fucking use it. (Just as a placeholder)
+#And i know very well that i wont fucking use it. ( Might, Just as a placeholder)
 
 def classify_cervical_image(image_url: str) -> dict:
     """
