@@ -33,6 +33,8 @@ interface PendingReport {
   date: string;
   healthcareWorker?: string;
   createdAt?: any;
+  aiReviewStatus?: 'Normal' | 'Abnormal';
+  aiConfidence?: number;
 }
 
 interface StatCardProps {
@@ -107,7 +109,9 @@ export default function DoctorHomeScreen() {
         patientName: screening.patientName || 'Unknown Patient',
         date: formatDate(screening.createdAt),
         healthcareWorker: screening.healthcareWorkerName || 'Unknown',
-        createdAt: screening.createdAt
+        createdAt: screening.createdAt,
+        aiReviewStatus: screening.aiReviewStatus,
+        aiConfidence: screening.aiConfidence
       }));
       
       setPendingReports(formattedReports);
@@ -249,6 +253,10 @@ export default function DoctorHomeScreen() {
         {item.healthcareWorker && (
           <ThemedText style={styles.healthcareWorker}>By {item.healthcareWorker}</ThemedText>
         )}
+        <ThemedText style={styles.aiSummary}>
+          AI: {item.aiReviewStatus || 'N/A'} | Confidence:{' '}
+          {typeof item.aiConfidence === 'number' ? `${Math.round(item.aiConfidence * 100)}%` : 'N/A'}
+        </ThemedText>
       </View>
       <MaterialIcons name="chevron-right" size={24} color={Colors.textSecondary} />
     </TouchableOpacity>
@@ -658,6 +666,11 @@ const styles = StyleSheet.create({
   healthcareWorker: {
     fontSize: 12,
     color: Colors.textSecondary,
+  },
+  aiSummary: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    marginTop: 4,
   },
   emptyContainer: {
     padding: 20,

@@ -32,6 +32,10 @@ export interface Screening {
   reviewStatus?: 'Normal' | 'Abnormal' | 'Pending';
   doctorComments?: string;
   doctorId?: string;
+  aiReviewStatus?: 'Normal' | 'Abnormal';
+  aiResult?: string;
+  aiConfidence?: number;
+  aiAvgRedIntensity?: number;
   createdAt?: Timestamp;
   healthcareWorkerId: string;
 }

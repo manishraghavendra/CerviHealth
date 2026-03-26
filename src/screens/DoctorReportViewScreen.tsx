@@ -28,6 +28,8 @@ interface UserData {
 // Extend the Screening interface to allow for symptoms data
 interface ExtendedScreening extends Screening {
   symptoms?: string[];
+  aiReviewStatus?: 'Normal' | 'Abnormal';
+  aiConfidence?: number;
 }
 
 // Extend the Patient interface to include medical information
@@ -422,6 +424,29 @@ export default function DoctorReportViewScreen() {
               <ThemedText style={styles.detailLabel}>Status:</ThemedText>
               <ThemedText style={[styles.detailValue, { color: getStatusColor(screening?.status || '') }]}>
                 {screening?.status || 'Unknown'}
+              </ThemedText>
+            </View>
+
+            <View style={styles.detailRow}>
+              <MaterialIcons name="psychology" size={18} color={Colors.textSecondary} style={styles.detailIcon} />
+              <ThemedText style={styles.detailLabel}>AI Result:</ThemedText>
+              <ThemedText
+                style={[
+                  styles.detailValue,
+                  { color: getStatusColor(screening?.aiReviewStatus || '') }
+                ]}
+              >
+                {screening?.aiReviewStatus || 'N/A'}
+              </ThemedText>
+            </View>
+
+            <View style={styles.detailRow}>
+              <MaterialIcons name="percent" size={18} color={Colors.textSecondary} style={styles.detailIcon} />
+              <ThemedText style={styles.detailLabel}>AI Confidence:</ThemedText>
+              <ThemedText style={styles.detailValue}>
+                {typeof screening?.aiConfidence === 'number'
+                  ? `${Math.round(screening.aiConfidence * 100)}%`
+                  : 'N/A'}
               </ThemedText>
             </View>
           </View>

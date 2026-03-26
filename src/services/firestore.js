@@ -444,6 +444,26 @@ export const updateScreeningImage = async (screeningId, adjustedImageUrl) => {
 };
 
 /**
+ * Save AI classification output for a screening record.
+ * @param {string} screeningId - Screening document ID
+ * @param {Object} aiResultData - AI prediction fields
+ * @returns {Promise<boolean>}
+ */
+export const updateScreeningAiResult = async (screeningId, aiResultData) => {
+  try {
+    const screeningRef = doc(firestore, 'screenings', screeningId);
+    await updateDoc(screeningRef, {
+      ...aiResultData,
+      updatedAt: serverTimestamp()
+    });
+    return true;
+  } catch (error) {
+    console.error('Error updating screening AI result:', error);
+    throw error;
+  }
+};
+
+/**
  * Update screening with doctor's review
  * @param {string} screeningId - The screening document ID
  * @param {string} reviewStatus - The review status (Normal, Abnormal, Pending)

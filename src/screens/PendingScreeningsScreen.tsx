@@ -18,6 +18,8 @@ interface ScreeningItem {
   patientName?: string;
   createdAt?: any;
   status: string;
+  aiReviewStatus?: 'Normal' | 'Abnormal';
+  aiConfidence?: number;
 }
 
 export default function PendingScreeningsScreen() {
@@ -95,6 +97,12 @@ export default function PendingScreeningsScreen() {
         </ThemedText>
         <ThemedText style={styles.screeningDate}>
           Date: {formatDate(item.createdAt)}
+        </ThemedText>
+        <ThemedText style={styles.aiText}>
+          AI: {item.aiReviewStatus || 'N/A'} | Confidence:{' '}
+          {typeof item.aiConfidence === 'number'
+            ? `${Math.round(item.aiConfidence * 100)}%`
+            : 'N/A'}
         </ThemedText>
       </View>
       <View style={styles.statusBadge}>
@@ -242,6 +250,11 @@ const styles = StyleSheet.create({
   screeningDate: {
     fontSize: 14,
     color: Colors.textSecondary,
+  },
+  aiText: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    marginTop: 6,
   },
   statusBadge: {
     paddingHorizontal: 12,
